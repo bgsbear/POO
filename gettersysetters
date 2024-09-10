@@ -1,0 +1,101 @@
+//Laura Lilina Esquibel Prudencio
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Vehiculo {
+private:
+    string marca;
+    string modelo;
+    int año;
+    string color;
+    int velocidadMaxima;
+    int numeroPuertas;
+    string tipoCombustible;
+    float consumoCombustible; 
+    int capacidadPasajeros;
+    float capacidadTanque; 
+    string tipoTransmision;
+    float precio;
+    string numeroPlaca;
+    string tipoVehiculo; 
+    bool esElectrico;
+
+public:
+    //constructor
+    Vehiculo(string marca, string modelo, int año, string color, int velocidadMaxima, int numeroPuertas,
+             string tipoCombustible, float consumoCombustible, int capacidadPasajeros, float capacidadTanque,
+             string tipoTransmision, float precio, string numeroPlaca, string tipoVehiculo, bool esElectrico)
+        : marca(marca), modelo(modelo), año(año), color(color), velocidadMaxima(velocidadMaxima),
+          numeroPuertas(numeroPuertas), tipoCombustible(tipoCombustible), consumoCombustible(consumoCombustible),
+          capacidadPasajeros(capacidadPasajeros), capacidadTanque(capacidadTanque), tipoTransmision(tipoTransmision),
+          precio(precio), numeroPlaca(numeroPlaca), tipoVehiculo(tipoVehiculo), esElectrico(esElectrico) {}
+
+    void mostrarDatos() {
+        cout << "Marca: " << marca << endl;
+        cout << "Modelo: " << modelo << endl;
+        cout << "Año: " << año << endl;
+        cout << "Color: " << color << endl;
+        cout << "Velocidad Máxima: " << velocidadMaxima << " km/h" << endl;
+        cout << "Número de Puertas: " << numeroPuertas << endl;
+        cout << "Tipo de Combustible: " << tipoCombustible << endl;
+        cout << "Consumo de Combustible: " << consumoCombustible << " L/100km" << endl;
+        cout << "Capacidad de Pasajeros: " << capacidadPasajeros << endl;
+        cout << "Capacidad del Tanque: " << capacidadTanque << " litros" << endl;
+        cout << "Transmisión: " << tipoTransmision << endl;
+        cout << "Precio: $" << precio << endl;
+        cout << "Placa: " << numeroPlaca << endl;
+        cout << "Tipo de Vehículo: " << tipoVehiculo << endl;
+        cout << "Es Eléctrico: " << (esElectrico ? "Sí" : "No") << endl;
+    }
+
+    void editarDatos() {
+        cout << "Editar los datos del vehículo (" << marca << " " << modelo << "):" << endl;
+        cout << "Nuevo color: ";
+        cin >> color;
+        cout << "Nueva velocidad máxima (km/h): ";
+        cin >> velocidadMaxima;
+        cout << "Nuevo número de puertas: ";
+        cin >> numeroPuertas;
+        cout << "Nuevo tipo de combustible: ";
+        cin >> tipoCombustible;
+        cout << "Nuevo consumo de combustible (L/100km): ";
+        cin >> consumoCombustible;
+        cout << "Nueva capacidad de pasajeros: ";
+        cin >> capacidadPasajeros;
+        cout << "Nueva capacidad del tanque (litros): ";
+        cin >> capacidadTanque;
+        cout << "Nuevo tipo de transmisión: ";
+        cin >> tipoTransmision;
+        cout << "Nuevo precio: $";
+        cin >> precio;
+        cout << "Nuevo tipo de vehículo: ";
+        cin >> tipoVehiculo;
+        cout << "Es eléctrico (1 = Sí, 0 = No): ";
+        cin >> esElectrico;
+    }
+};
+
+int main() {
+    //crea tres objetos de la clase Vehiculo
+    Vehiculo vehiculo1("Toyota", "Corolla", 2020, "Rojo", 180, 4, "Gasolina", 6.5, 5, 50, "Automática", 20000, "XYZ-123", "Sedán", false);
+    Vehiculo vehiculo2("Tesla", "Model S", 2023, "Negro", 250, 4, "Eléctrico", 0.0, 5, 100, "Automática", 80000, "TES-456", "Sedán", true);
+    Vehiculo vehiculo3("Ford", "F-150", 2019, "Blanco", 200, 2, "Diesel", 8.5, 3, 80, "Manual", 35000, "F150-789", "Camioneta", false);
+
+    //muestra los datos iniciales de cada vehículo
+    cout << "Datos iniciales de los vehículos:" << endl;
+    vehiculo1.mostrarDatos();
+    cout << endl;
+    vehiculo2.mostrarDatos();
+    cout << endl;
+    vehiculo3.mostrarDatos();
+    cout << endl;
+
+    //edita los datos de un vehículo
+    vehiculo1.editarDatos();
+    cout << "\nDatos actualizados del vehículo 1:" << endl;
+    vehiculo1.mostrarDatos();
+
+    return 0;
+}
