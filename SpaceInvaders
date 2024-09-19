@@ -1,0 +1,319 @@
+//LauraLiliana Esquibel Prudencio
+//23310269
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <list>
+
+using namespace std;
+
+#define right 77
+#define left 75
+#define up 72
+#define down 80
+
+void gotoxy(int x, int y);
+void ocultarcursor();
+void lim();
+void clearScreen();
+
+class player {
+private:
+    int x, y;
+    int live;
+    int heart;
+public:
+    player(int _x, int _y, int _v, int _h);
+    int xx() { return x; }
+    int yy() { return y; }
+    int v() { return live; }
+    void nave();
+    void deletenave();
+    void movenave();
+    void lives();
+    void heartss() { heart--; }
+    void death();
+};
+
+player::player(int _x, int _y, int _v, int _h) : x(_x), y(_y), live(_v), heart(_h) {}
+
+void player::nave() {
+    gotoxy(x, y);
+    printf("  %c", 30);
+    gotoxy(x, y + 1);
+    printf(" %c%c%c", 40, 207, 41);
+    gotoxy(x, y + 2);
+    printf("%c%c %c%c", 30, 190, 190, 30);
+}
+
+void player::deletenave() {
+    gotoxy(x-1, y-1);
+    printf("          ");
+    gotoxy(x-1, y);
+    printf("          ");
+    gotoxy(x-1, y+1);
+    printf("          ");
+    gotoxy(x-1, y+2);
+    printf("          ");
+}
+
+void player::movenave() {
+    if (kbhit()) {
+        char tecla = getch();
+        deletenave();
+        if (tecla==up && y>4)
+            y--;
+        if (tecla==down && y+3<23)
+            y++;
+        if (tecla==right && x+5<50)
+            x++;
+        if (tecla==left && x>3)
+            x--;
+        nave();
+    }
+}
+
+void player::lives() {
+    gotoxy(22,2);
+    printf("Lives:%i", live);
+    gotoxy(40,2);
+    for(int i=0;i<heart;i++){
+        gotoxy(46+i,2);
+        printf("%c",3);
+    }
+}
+
+void player::death() {
+    if (heart<=0) {
+        deletenave();
+        gotoxy(x, y);
+        printf("%c %c %c", 250, 250, 250);
+        gotoxy(x, y+1);
+        printf("%c %c %c", 250, 197, 250);
+        gotoxy(x, y+2);
+        printf("%c %c %c", 250, 250, 250);
+        Sleep(600);
+        deletenave();
+        gotoxy(x-1, y-1);
+        printf("%c %c %c", 250, 250, 250);
+        gotoxy(x-1, y+1);
+        printf("%c %c %c", 250, 43, 250);
+        gotoxy(x-1, y+2);
+        printf("%c %c %c", 250, 250, 250);
+        deletenave();
+        Sleep(600);
+        live--;
+        heart=5; 
+        lives();
+        nave();
+    }
+}
+
+class asteroid {
+private:
+    int x, y;
+public:
+    asteroid(int _x, int _y);
+    int xx() { return x; }
+    int yy() { return y; }
+    void asteroidd();
+    void moveast();
+    void collision(class player &p);
+};
+
+asteroid::asteroid(int _x, int _y) : x(_x), y(_y) {}
+
+void asteroid::asteroidd() {
+    gotoxy(x, y);
+    printf("%c", 219);
+}
+
+void asteroid::moveast() {
+    gotoxy(x, y);
+    printf(" ");
+    y++;
+    if (y>=22) { 
+        x=rand()%47+3;
+        y=4; 
+    }
+    asteroidd();
+}
+
+void asteroid::collision(player &p) {
+    if (x>=p.xx() && x<p.xx()+6 && y>=p.yy() && y<=p.yy()+2) {
+        p.heartss();
+        p.deletenave();
+        p.nave();
+        p.lives();
+        x=rand()%47+3;
+        y=4;
+    }
+}
+
+class bullet {
+private:
+    int x, y;
+public:
+    bullet(int _x, int _y);
+    int xx() { return x; }
+    int yy() { return y; }
+    void bulletmove();
+    bool bulletout();
+};
+
+bullet::bullet(int _x, int _y) : x(_x), y(_y) {}
+
+void bullet::bulletmove() {
+    gotoxy(x, y);
+    printf(" ");
+    y--;
+    gotoxy(x, y);
+    printf("%c", 221);
+}
+
+bool bullet::bulletout() {
+    return y<=4; 
+}
+
+void clearScreen() {
+    system("cls");
+}
+
+int main() {
+    bool playAgain=true;
+
+    while (playAgain) {
+        clearScreen();
+        ocultarcursor();
+        lim();
+        player p(20, 20, 3, 5);
+        p.nave();
+        p.lives();
+        
+        list<asteroid*> a;
+        list<asteroid*>::iterator ia;
+        for (int i=0;i<6;i++) {
+            a.push_back(new asteroid(rand()%47+3, rand()%5+4));
+        }
+        
+        list<bullet*> b;
+        list<bullet*>::iterator ib;
+        bool gameover=false;
+        int score=0;
+        
+        while (!gameover) {
+            gotoxy(2, 2);
+            printf("Score: %i", score);
+            
+            if (kbhit()) {
+                char tecla=getch();
+                if (tecla=='z') {
+                    b.push_back(new bullet(p.xx()+2, p.yy()-1));
+                }
+            }
+            
+            for (ib=b.begin(); ib!=b.end(); ) {
+                (*ib)->bulletmove();
+                if ((*ib)->bulletout()) {
+                    gotoxy((*ib)->xx(), (*ib)->yy());
+                    printf(" ");
+                    delete (*ib);
+                    ib=b.erase(ib);
+                } else {
+                    ++ib;
+                }
+            }
+            
+            for (ia=a.begin();ia!= a.end();++ia) {
+                (*ia)->moveast();
+                (*ia)->collision(p);
+            }
+            
+            for (ia=a.begin(); ia!=a.end(); ) {
+                bool erased=false;
+                for (ib=b.begin(); ib!=b.end(); ) {
+                    if ((*ia)->xx()==(*ib)->xx() && ((*ia)->yy()+1==(*ib)->yy() || (*ia)->yy()==(*ib)->yy())) {
+                        gotoxy((*ib)->xx(), (*ib)->yy());
+                        printf(" ");
+                        delete (*ib);
+                        ib=b.erase(ib);
+                        gotoxy((*ia)->xx(), (*ia)->yy());
+                        printf(" ");
+                        delete (*ia);
+                        ia=a.erase(ia);
+                        a.push_back(new asteroid(rand()%47+3, 4));
+                        score=score+10;
+                        erased=true;
+                        break;
+                    } else {
+                        ++ib;
+                    }
+                }
+                if (!erased) {
+                    ++ia;
+                }
+            }
+            
+            if (p.v()==0) {
+                gameover=true;
+            }
+            
+            p.death();
+            p.movenave();
+            Sleep(40); 
+        }
+        
+        clearScreen(); 
+        gotoxy(25, 10);
+        printf("GAME OVER");
+        gotoxy(20, 12);
+        printf("Press any key to play again...");
+        getch();  
+    }
+
+    return 0;
+}
+
+void gotoxy(int x, int y) {
+    HANDLE hCon;
+    hCon=GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD dwPos;
+    dwPos.X=x;
+    dwPos.Y=y;
+    SetConsoleCursorPosition(hCon, dwPos);
+}
+
+void ocultarcursor() {
+    HANDLE hCon;
+    hCon=GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cci;
+    cci.dwSize=1;
+    cci.bVisible=FALSE;
+    SetConsoleCursorInfo(hCon, &cci);
+}
+
+void lim() {
+    for (int i=2;i<50;i++) {
+        gotoxy(i, 3);
+        printf("%c", 205); 
+        gotoxy(i, 23);
+        printf("%c", 205); 
+    }
+
+    for (int i=4;i<23;i++) {
+        gotoxy(2, i);
+        printf("%c", 186); 
+        gotoxy(50, i);
+        printf("%c", 186);
+    }
+
+    gotoxy(2, 3);
+    printf("%c", 201); 
+    gotoxy(50, 3);
+    printf("%c", 187); 
+    gotoxy(2, 23);
+    printf("%c", 200); 
+    gotoxy(50, 23);
+    printf("%c", 188); 
+}
